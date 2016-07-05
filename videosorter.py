@@ -68,7 +68,7 @@ class videosorter:
                     if guessitData['type'] == 'episode' and tmdbData['media_type'] == 'tv':
                         if 'season' in guessitData and 'episode' in guessitData:
                             try:
-                                tvdbData = self.tvdbsearch[tmdbData['name']][guessitData['season']][guessitData['episode']]['episodename']
+                                tvdbData = self.tvdbsearch[self.filterString(tmdbData['name'])][guessitData['season']][guessitData['episode']]['episodename']
                                 self.series_handler(guessitData,tmdbData,video,tvdbData=tvdbData)
                             except:
                                 self.series_handler(guessitData,tmdbData,video)
@@ -198,23 +198,23 @@ class videosorter:
                 os.mkdir(self.config['Folder Settings']['moviefolder'])
             if 'movie_in_additional_folder' in self.config['Movie Settings']:
                 if self.config['Movie Settings']['movie_in_additional_folder'] == 'True':
-                    if os.path.isdir(self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']) == False:
-                        os.mkdir(self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title'])
-                    if self.checkForDuplicates(self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'/'+tmdbData['title']+'.'+path.split('.')[-1],path):
-                        if self.ui.askDialog('Video already exists','The File "{}" is already existing\nOverwrite?'.format(self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'/'+tmdbData['title'])):
-                            shutil.rmtree(self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'/')
-                            os.mkdir(self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'/')
-                            shutil.move(path,self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'/'+tmdbData['title']+'.'+path.split('.')[-1])
+                    if os.path.isdir(self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])) == False:
+                        os.mkdir(self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title']))
+                    if self.checkForDuplicates(self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'/'+self.filterString(tmdbData['title'])+'.'+path.split('.')[-1],path):
+                        if self.ui.askDialog('Video already exists','The File "{}" is already existing\nOverwrite?'.format(self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'/'+self.filterString(tmdbData['title']))):
+                            shutil.rmtree(self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'/')
+                            os.mkdir(self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'/')
+                            shutil.move(path,self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'/'+self.filterString(tmdbData['title'])+'.'+path.split('.')[-1])
                     else:
-                        shutil.move(path,self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'/'+tmdbData['title']+'.'+path.split('.')[-1])
+                        shutil.move(path,self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'/'+self.filterString(tmdbData['title'])+'.'+path.split('.')[-1])
                 else:
-                    if self.checkForDuplicates(self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'.'+path.split('.')[-1],path):
-                        if self.ui.askDialog('Video already exists','The File "{}" is already existing\nOverwrite?'.format(self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title'])):
+                    if self.checkForDuplicates(self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'.'+path.split('.')[-1],path):
+                        if self.ui.askDialog('Video already exists','The File "{}" is already existing\nOverwrite?'.format(self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title']))):
                             shutil.rmtree(self.config['Folder Settings']['moviefolder']+'/')
                             os.mkdir(self.config['Folder Settings']['moviefolder']+'/')
-                            shutil.move(path,self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'.'+path.split('.')[-1])
+                            shutil.move(path,self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'.'+path.split('.')[-1])
                     else:
-                        shutil.move(path,self.config['Folder Settings']['moviefolder']+'/'+tmdbData['title']+'.'+path.split('.')[-1])
+                        shutil.move(path,self.config['Folder Settings']['moviefolder']+'/'+self.filterString(tmdbData['title'])+'.'+path.split('.')[-1])
 
 
     def series_handler(self,guessitData,tmdbData,path,tvdbData=''):
@@ -242,7 +242,7 @@ class videosorter:
                         name = tvdbData
                     else:
                         name = 'S'+str(seasonNumber)+'E'+str(episodeNumber)
-                    folder = self.config['Folder Settings']['seriesfolder']+'/'+tmdbData['name']
+                    folder = self.config['Folder Settings']['seriesfolder']+'/'+self.filterString(tmdbData['name'])
                     if os.path.isdir(folder) == False:
                         os.mkdir(folder)
                     folder += '/'+self.config['Folder Settings']['seasonfolder']+' '+str(seasonNumber)
@@ -251,15 +251,15 @@ class videosorter:
                     folder += '/'+self.config['Folder Settings']['episodefolder']+' '+str(episodeNumber)
                     if os.path.isdir(folder) == False:
                         os.mkdir(folder)
-                    if self.checkForDuplicates(folder+'/'+name+'.'+path.split('.')[-1],path):
-                        if self.ui.askDialog('Video already exists','The File "{}" is already existing\nOverwrite?'.format(folder+'/'+name)):
+                    if self.checkForDuplicates(folder+'/'+self.filterString(name)+'.'+path.split('.')[-1],path):
+                        if self.ui.askDialog('Video already exists','The File "{}" is already existing\nOverwrite?'.format(folder+'/'+self.filterString(name))):
                             shutil.rmtree(folder+'/')
                             os.mkdir(folder+'/')
-                            shutil.move(path,folder+'/'+name+'.'+path.split('.')[-1])
+                            shutil.move(path,folder+'/'+self.filterString(name)+'.'+path.split('.')[-1])
                     else:
-                        shutil.move(path,folder+'/'+name+'.'+path.split('.')[-1])
+                        shutil.move(path,folder+'/'+self.filterString(name)+'.'+path.split('.')[-1])
                 else:
-                    folder = self.config['Folder Settings']['seriesfolder']+'/'+tmdbData['name']
+                    folder = self.config['Folder Settings']['seriesfolder']+'/'+self.filterString(tmdbData['name'])
                     if os.path.isdir(folder) == False:
                         os.mkdir(folder)
                     folder += '/'+self.config['Folder Settings']['seasonfolder']+' '+str(seasonNumber)
@@ -273,7 +273,8 @@ class videosorter:
                     else:
                         shutil.move(path,folder+'/'+self.config['Folder Settings']['episodefolder']+str(episodeNumber)+'.'+path.split('.')[-1])
 
-
+    def filterString(self,string):
+        return string.replace(":"," - ").replace("|"," - ").replace("/"," - ").replace("?","").replace("*","").replace("<"," ").replace(">"," ").replace("\\","")
     def videoNotFound(self,path):
         try:
             if self.ui.askDialog('Video unknown','The Video {} could not be recognized.\nIs it a Series?'.format(path)):
